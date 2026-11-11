@@ -150,3 +150,23 @@ kbd {
 #restart-btn:hover {
   background: #9bbdff;
 }
+
+/* ---- Records ---- */
+.rec-list { list-style: none; counter-reset: rec; display: flex; flex-direction: column; gap: 3px; }
+.rec-list li { counter-increment: rec; display: flex; gap: 6px; font-size: 12px; color: #aaa; padding: 2px 4px; border-radius: 3px; }
+.rec-list li::before { content: counter(rec) "."; color: #555570; width: 14px; }
+.rec-list li.rec-empty::before { content: ""; width: 0; }
+.rec-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rec-score { font-family: 'Courier New', Courier, monospace; color: #7aa2f7; }
+.rec-list li.rec-new { background: #7aa2f7; color: #0f0f17; font-weight: 700; }
+.rec-list li.rec-new::before, .rec-list li.rec-new .rec-score { color: #0f0f17; }
+.rec-stats { font-size: 11px; color: #888; }
+.rec-stats b { color: #7aa2f7; }
+.rec-reset { background: none; border: 1px solid #3a3a5a; color: #888; border-radius: 4px; padding: 3px 8px; font-size: 11px; cursor: pointer; }
+.rec-reset:hover { color: #e57373; border-color: #e57373; }
+.rec-over { display: flex; flex-direction: column; gap: 8px; align-items: stretch; width: 200px; }
+.rec-over[hidden], .rec-form[hidden] { display: none; }
+.rec-msg { font-size: 13px; color: #ffd54f; }
+.rec-form { display: flex; gap: 6px; }
+.rec-form input { flex: 1; min-width: 0; background: #1a1a25; border: 1px solid #3a3a5a; color: #e0e0e0; border-radius: 4px; padding: 5px 8px; user-select: text; }
+.rec-form button { background: #7aa2f7; color: #0f0f17; border: none; border-radius: 4px; padding: 5px 10px; font-weight: 700; cursor: pointer; }
