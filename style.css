@@ -150,3 +150,60 @@ kbd {
 #restart-btn:hover {
   background: #9bbdff;
 }
+
+/* ---- Pause menu ---- */
+#pause-menu.hidden,
+.pm-controls.hidden {
+  display: none;
+}
+
+.pm-title {
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: 4px;
+  color: #7aa2f7;
+}
+
+.pm-btn {
+  width: 180px;
+  background: #7aa2f7;
+  color: #0f0f17;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 0;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 1px;
+}
+
+.pm-btn:hover,
+.pm-btn:focus-visible {
+  background: #9bbdff;
+}
+
+.pm-controls {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-size: 13px;
+  color: #aaa;
+  text-align: left;
+}
+
+.pm-level {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  color: #aaa;
+  letter-spacing: 1px;
+}
+
+.pm-level select {
+  background: #1a1a26;
+  color: #eee;
+  border: 1px solid #444;
+  border-radius: 4px;
+  padding: 6px;
+}
