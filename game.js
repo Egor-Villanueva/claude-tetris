@@ -110,6 +110,7 @@ function clearLines() {
     dropInterval = Math.max(100, 1000 - (level - 1) * 90);
     updateHUD();
   }
+  recTrackCombo(cleared); // records
 }
 
 function ghostY() {
@@ -224,6 +225,7 @@ function endGame() {
   overlayTitle.textContent = 'GAME OVER';
   overlayScore.textContent = `Puntuación: ${score.toLocaleString()}`;
   overlay.classList.remove('hidden');
+  recOnGameOver(); // records
 }
 
 function togglePause() {
@@ -253,7 +255,7 @@ function loop(ts) {
     }
   }
   draw();
-  animId = requestAnimationFrame(loop);
+  if (!gameOver) animId = requestAnimationFrame(loop);
 }
 
 function init() {
@@ -270,6 +272,7 @@ function init() {
   spawn();
   updateHUD();
   overlay.classList.add('hidden');
+  recOnInit(); // records
   cancelAnimationFrame(animId);
   animId = requestAnimationFrame(loop);
 }
@@ -300,5 +303,141 @@ document.addEventListener('keydown', e => {
 });
 
 restartBtn.addEventListener('click', init);
+
+// ---- Records ----
+const REC_KEY = 'tetris.records';
+const REC_MAX = 5;
+const REC_NAME_KEY = 'tetris.lastName';
+let recCombo = 0, recGameBestCombo = 0, recSaved = false, recQualifies = false;
+
+function recLoad() {
+  const data = { top: [], bestCombo: 0, maxLines: 0 };
+  try {
+    const raw = JSON.parse(localStorage.getItem(REC_KEY));
+    if (raw && typeof raw === 'object') {
+      if (Array.isArray(raw.top)) {
+        for (const e of raw.top) {
+          if (e && Number.isFinite(e.score)) {
+            data.top.push({
+              name: String(e.name ?? '').slice(0, 12) || 'Anónimo',
+              score: e.score,
+              lines: Number.isFinite(e.lines) ? e.lines : 0,
+              date: typeof e.date === 'string' ? e.date : '',
+            });
+          }
+        }
+        data.top.sort((a, b) => b.score - a.score);
+        data.top = data.top.slice(0, REC_MAX);
+      }
+      if (Number.isFinite(raw.bestCombo)) data.bestCombo = raw.bestCombo;
+      if (Number.isFinite(raw.maxLines)) data.maxLines = raw.maxLines;
+    }
+  } catch (e) { /* datos corruptos o localStorage no disponible */ }
+  return data;
+}
+
+function recStore(data) {
+  try { localStorage.setItem(REC_KEY, JSON.stringify(data)); } catch (e) { /* ignorar */ }
+}
+
+function recTrackCombo(cleared) {
+  if (cleared > 0) {
+    recCombo++;
+    if (recCombo > recGameBestCombo) recGameBestCombo = recCombo;
+  } else {
+    recCombo = 0;
+  }
+}
+
+function recQualifiesFor(data, s) {
+  return s > 0 && (data.top.length < REC_MAX || s > data.top[data.top.length - 1].score);
+}
+
+function recRender(highlight) {
+  const data = recLoad();
+  for (const id of ['rec-list', 'rec-list-over']) {
+    const ol = document.getElementById(id);
+    ol.textContent = '';
+    if (!data.top.length) {
+      const li = document.createElement('li');
+      li.className = 'rec-empty';
+      li.textContent = 'Sin records';
+      ol.appendChild(li);
+    }
+    data.top.forEach((e, i) => {
+      const li = document.createElement('li');
+      if (id === 'rec-list-over' && i === highlight) li.className = 'rec-new';
+      const n = document.createElement('span');
+      n.className = 'rec-name';
+      n.textContent = e.name;
+      const s = document.createElement('span');
+      s.className = 'rec-score';
+      s.textContent = e.score.toLocaleString();
+      li.append(n, s);
+      li.title = `${e.lines} líneas${e.date ? ' - ' + e.date : ''}`;
+      ol.appendChild(li);
+    });
+  }
+  for (const id of ['rec-combo', 'rec-combo-over'])
+    document.getElementById(id).textContent = data.bestCombo;
+  for (const id of ['rec-lines', 'rec-lines-over'])
+    document.getElementById(id).textContent = data.maxLines;
+}
+
+function recOnInit() {
+  recCombo = 0;
+  recGameBestCombo = 0;
+  recSaved = false;
+  document.getElementById('rec-gameover').hidden = true;
+  recRender(-1);
+}
+
+function recOnGameOver() {
+  const data = recLoad();
+  if (recGameBestCombo > data.bestCombo) data.bestCombo = recGameBestCombo;
+  if (lines > data.maxLines) data.maxLines = lines;
+  recStore(data);
+  recQualifies = recQualifiesFor(data, score);
+  document.getElementById('rec-form').hidden = !recQualifies;
+  document.getElementById('rec-msg').textContent = recQualifies ? '¡Entras en el Top 5!' : '';
+  const input = document.getElementById('rec-name');
+  try { input.value = localStorage.getItem(REC_NAME_KEY) || ''; } catch (e) { input.value = ''; }
+  document.getElementById('rec-gameover').hidden = false;
+  recRender(-1);
+  // retraso para no capturar teclas que el jugador aún esté pulsando
+  if (recQualifies) setTimeout(() => { if (gameOver && !recSaved) input.focus(); }, 600);
+}
+
+function recSave() {
+  if (recSaved || !recQualifies) return;
+  const name = document.getElementById('rec-name').value.trim().slice(0, 12) || 'Anónimo';
+  try { localStorage.setItem(REC_NAME_KEY, name); } catch (e) { /* ignorar */ }
+  const data = recLoad();
+  const entry = { name, score, lines, date: new Date().toISOString().slice(0, 10) };
+  data.top.push(entry);
+  data.top.sort((a, b) => b.score - a.score); // estable: empates quedan tras los antiguos
+  data.top = data.top.slice(0, REC_MAX);
+  recStore(data);
+  recSaved = true;
+  document.getElementById('rec-form').hidden = true;
+  document.getElementById('rec-msg').textContent = '¡Record guardado!';
+  recRender(data.top.indexOf(entry));
+  restartBtn.focus();
+}
+
+function recReset() {
+  if (!confirm('¿Borrar todos los records?')) return;
+  try { localStorage.removeItem(REC_KEY); } catch (e) { /* ignorar */ }
+  recRender(-1);
+}
+
+document.getElementById('rec-save').addEventListener('click', recSave);
+document.getElementById('rec-name').addEventListener('keydown', e => {
+  e.stopPropagation(); // evita atajos de juego (P, Space...) mientras se escribe
+  if (e.key === 'Enter') recSave();
+});
+for (const id of ['rec-reset', 'rec-reset-over'])
+  document.getElementById(id).addEventListener('click', e => { recReset(); e.currentTarget.blur(); });
+// ---- Fin Records ----
 
 init();

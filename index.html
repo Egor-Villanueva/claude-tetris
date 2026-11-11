@@ -40,6 +40,15 @@
             <li><kbd>P</kbd> pausa</li>
           </ul>
         </div>
+
+        <!-- Records -->
+        <div class="panel-section rec-panel">
+          <span class="label">TOP 5</span>
+          <ol id="rec-list" class="rec-list"></ol>
+          <div class="rec-stats">Mejor combo: <b id="rec-combo">0</b></div>
+          <div class="rec-stats">Líneas máx: <b id="rec-lines">0</b></div>
+          <button id="rec-reset" class="rec-reset" type="button">Resetear records</button>
+        </div>
       </aside>
     </div>
 
@@ -47,6 +56,18 @@
       <div class="overlay-box">
         <p id="overlay-title">GAME OVER</p>
         <p id="overlay-score"></p>
+
+        <!-- Records -->
+        <div id="rec-gameover" class="rec-over" hidden>
+          <p id="rec-msg" class="rec-msg"></p>
+          <div id="rec-form" class="rec-form" hidden>
+            <input id="rec-name" type="text" maxlength="12" placeholder="Tu nombre" autocomplete="off" />
+            <button id="rec-save" type="button">Guardar</button>
+          </div>
+          <ol id="rec-list-over" class="rec-list"></ol>
+          <div class="rec-stats">Mejor combo: <b id="rec-combo-over">0</b> · Líneas máx: <b id="rec-lines-over">0</b></div>
+          <button id="rec-reset-over" class="rec-reset" type="button">Resetear records</button>
+        </div>
         <button id="restart-btn">Reiniciar</button>
       </div>
     </div>
