@@ -150,3 +150,51 @@ kbd {
 #restart-btn:hover {
   background: #9bbdff;
 }
+
+/* ---- Skins ---- */
+body {
+  --skin-page-bg: #0f0f17;
+  --skin-text: #e0e0e0;
+  --skin-border: #2a2a3a;
+  --skin-board-bg: #1a1a25;
+  --skin-label: #555570;
+  --skin-accent: #7aa2f7;
+  --skin-kbd-bg: #22223a;
+  --skin-kbd-border: #3a3a5a;
+  background: var(--skin-page-bg);
+  color: var(--skin-text);
+}
+body[data-skin="neon"] {
+  --skin-page-bg: #000; --skin-text: #cfffff; --skin-border: #00f0ff;
+  --skin-board-bg: #000; --skin-label: #00b8c4; --skin-accent: #39ff14;
+  --skin-kbd-bg: #05050a; --skin-kbd-border: #d400ff;
+}
+body[data-skin="pastel"] {
+  --skin-page-bg: #fbeee6; --skin-text: #6b5b6e; --skin-border: #e0cfc4;
+  --skin-board-bg: #f6f1ec; --skin-label: #a08aa8; --skin-accent: #b48ad6;
+  --skin-kbd-bg: #fff; --skin-kbd-border: #e0cfc4;
+}
+body[data-skin="pixel"] {
+  --skin-page-bg: #0b0c10; --skin-text: #d8dae0; --skin-border: #000;
+  --skin-board-bg: #14161c; --skin-label: #7b8294; --skin-accent: #f2c200;
+  --skin-kbd-bg: #1d2029; --skin-kbd-border: #000;
+}
+#board, #next-canvas { border-color: var(--skin-border); background: var(--skin-board-bg); }
+body[data-skin="neon"] #board, body[data-skin="neon"] #next-canvas { box-shadow: 0 0 14px #00f0ff88; }
+body[data-skin="pastel"] #board, body[data-skin="pastel"] #next-canvas { border-radius: 14px; }
+body[data-skin="pixel"] #board, body[data-skin="pixel"] #next-canvas { border-radius: 0; border-width: 3px; image-rendering: pixelated; }
+.label { color: var(--skin-label); }
+.value, #overlay-score { color: var(--skin-accent); }
+.controls li { color: var(--skin-text); opacity: 0.7; }
+kbd { background: var(--skin-kbd-bg); border-color: var(--skin-kbd-border); color: var(--skin-text); }
+body[data-skin="pastel"] .overlay { background: rgba(251, 238, 230, 0.8); }
+body[data-skin="pastel"] #restart-btn { background: #b48ad6; color: #fff; }
+.skin-select {
+  background: var(--skin-kbd-bg);
+  color: var(--skin-text);
+  border: 1px solid var(--skin-kbd-border);
+  border-radius: 4px;
+  padding: 6px 8px;
+  font-size: 12px;
+  font-family: inherit;
+}
